@@ -49,7 +49,9 @@
 
 ### 思考等级与兼容参数
 
-- `reasoning_effort`：`auto / none / minimal / low / medium / high / xhigh`。`auto` 不发送该参数，使用服务默认；**不等于关闭思考**。其他值原样发送，是否支持由具体模型和服务决定，不支持时会显示错误。
+点击 **测试当前模型**，使用节点当前的 URL、Key、model、思考等级、系统提示词、语言、token 和额外参数翻译固定短句“一只白猫坐在窗边。”。无需运行整个工作流，测试结果显示耗时、模型返回或错误原因，不覆盖正式译文。按钮会产生一次实际 API 调用，可能计费；成功表示接口返回了文本，不保证服务实际采用了思考参数或译文质量。配置项连接了外部输入时，请运行工作流验证实际连接值。更新此功能后需要重启 ComfyUI 并刷新网页。
+
+- `reasoning_effort`：`不开启 / low / medium / high / xhigh / max`，默认 `low`。“不开启”发送 `none`，其余值原样发送，不将 `max` 映射成 `xhigh`。每个等级均需具体接口和模型支持；不支持时显示错误。旧网页工作流载入后 `none` 改为“不开启”，`auto/minimal` 改为 `low`；使用 API 工作流时请手动更新旧值。
 - `token_parameter`：老兼容服务用 `max_tokens`；需要新字段的推理模型用 `max_completion_tokens`；`omit` 不传上限。
 - `max_tokens`：每段请求的输出额度。部分推理模型会把思考 token 也计入，出现截断时调大。插件遇到 `finish_reason=length` 会报错，不把残缺译文当成功。
 - `extra_body_json`：服务商专属参数对象，例如 `{"temperature":0.2}` 或服务明确支持的 `{"chat_template_kwargs":{"enable_thinking":false}}`。默认不传 temperature，减少与推理模型的冲突。禁止覆盖消息、模型、思考等级和 token 参数。
@@ -83,3 +85,9 @@ HTTP 错误仅显示状态和排错建议，不回显服务响应、Key 或用�
 - [OpenAI Chat Completions 参数](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create)
 - [ComfyUI 节点属性](https://docs.comfy.org/custom-nodes/backend/server_overview)
 - [ComfyUI JavaScript 扩展](https://docs.comfy.org/custom-nodes/js/javascript_overview)
+
+## v1.2 提示词调整
+
+参考 [dsh-unrestricted 的规则组织方式](https://github.com/yexi-by/dsh-unrestricted/blob/master/src/rules.js)，独立编写翻译任务约定：直接输出结果、把原文当资料而非指令、保留事实和语气，减少误拒绝。未复制该项目的通用无限制规则，不会强行改写人物年龄或补充原文内容。提示词不能保证服务端接受请求，也不保证消除拒答。
+
+两种模式的内置提示词均已更新；system_prompt 非空时仍完全以自定义内容为准。已保存旧提示词的节点请点击“载入当前模式默认系统提示词”更新，或清空该字段使用新的默认内容。服务返回明确的 refusal/content_filter 时节点会报告拒绝，不把它作为成功译文；普通文本中的拒答没有用关键词自动判定，以免把含拒绝用语的原文误判。

@@ -92,16 +92,33 @@ class CoreTests(unittest.TestCase):
         self.assertIn("标签", body["messages"][0]["content"])
         self.assertNotIn("{target_language}", body["messages"][0]["content"])
 
-    def test_auto_omits_reasoning_and_custom_prompt(self):
+    def test_default_reasoning_and_custom_prompt(self):
         core.translate(**self.args(mode="translate", system_prompt='Translate to {target_language}. JSON: {"a":1}', token_parameter="omit"))
         body = Handler.seen[-1][2]
-        self.assertNotIn("reasoning_effort", body)
+        self.assertEqual(body["reasoning_effort"], "low")
         self.assertNotIn("max_tokens", body)
         self.assertEqual(body["messages"][0]["content"], 'Translate to English. JSON: {"a":1}')
 
     def test_plain_translation_prompt(self):
         core.translate(**self.args(mode="translate"))
         self.assertIn("段落", Handler.seen[-1][2]["messages"][0]["content"])
+
+    def test_effort_choices_and_payloads(self):
+        self.assertEqual(core.EFFORTS, ["不开启", "low", "medium", "high", "xhigh", "max"])
+        for effort in core.EFFORTS:
+            core.translate(**self.args(reasoning_effort=effort))
+            self.assertEqual(Handler.seen[-1][2]["reasoning_effort"], "none" if effort == "不开启" else effort)
+
+    def test_default_prompts_preserve_source(self):
+        for mode in ("tags", "translate"):
+            core.translate(**self.args(mode=mode))
+            prompt = Handler.seen[-1][2]["messages"][0]["content"]
+            self.assertIn(core.TRANSLATION_RULES, prompt)
+
+    def test_explicit_refusal_is_not_translation(self):
+        for choice in ({"finish_reason": "content_filter", "message": {"content": ""}}, {"message": {"refusal": "no", "content": None}}):
+            with self.assertRaisesRegex(core.APIError, "服务端拒绝"):
+                core.extract_content({"choices": [choice]})
 
     def test_chunk_lossless(self):
         text = ("第一句，有内容。第二句也有内容！\n\nAnother sentence. " * 30) + "尾巴"

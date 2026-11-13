@@ -14,7 +14,7 @@ class TranslateTag:
             "mode": (["tags", "translate"], {"default": "tags", "tooltip": "tags：标签式翻译；translate：普通翻译"}),
             "source_language": (LANGUAGES, {"default": "auto"}),
             "target_language": (LANGUAGES[1:], {"default": "English"}),
-            "reasoning_effort": (EFFORTS, {"default": "auto", "tooltip": "auto 不发送思考参数；其他等级需要模型/服务支持"}),
+            "reasoning_effort": (EFFORTS, {"default": "low", "tooltip": "不开启发送 none；low/medium/high/xhigh/max 原样发送，各等级需接口支持"}),
             "system_prompt": ("STRING", {"multiline": True, "default": "", "tooltip": "留空使用对应模式内置提示词；点击下方按钮可载入修改。支持 {source_language} 和 {target_language}"}),
             "chunk_chars": ("INT", {"default": 6000, "min": 0, "max": 200000, "step": 500, "tooltip": "按段落/句子分段的字符上限，0 禁用；跨段上下文不共享"}),
             "max_tokens": ("INT", {"default": 4096, "min": 128, "max": 131072}),
