@@ -103,6 +103,32 @@ class CoreTests(unittest.TestCase):
         core.translate(**self.args(mode="translate"))
         self.assertIn("段落", Handler.seen[-1][2]["messages"][0]["content"])
 
+    def test_order_rules_reach_model_in_all_chunks(self):
+        for order in core.PROMPT_ORDERS:
+            Handler.seen.clear()
+            core.translate(**self.args(text="女孩穿红裙，身后是花园。" * 8, chunk_chars=40, prompt_order=order))
+            self.assertGreater(len(Handler.seen), 1)
+            for _, _, body in Handler.seen:
+                prompt = body["messages"][0]["content"]
+                self.assertIn(core.PROMPT_ORDERS[order], prompt)
+                self.assertEqual(prompt.count("标签编排要求"), 1)
+                self.assertIn("保持人物属性成组", prompt)
+
+    def test_custom_prompt_kept_and_order_appended(self):
+        core.translate(**self.args(system_prompt="Custom instruction", prompt_order="背景优先"))
+        prompt = Handler.seen[-1][2]["messages"][0]["content"]
+        self.assertTrue(prompt.startswith("Custom instruction"))
+        self.assertIn(core.PROMPT_ORDERS["背景优先"], prompt)
+
+    def test_prose_not_reordered(self):
+        core.translate(**self.args(mode="translate", prompt_order="背景优先"))
+        self.assertNotIn("标签编排要求", Handler.seen[-1][2]["messages"][0]["content"])
+
+    def test_bad_order_rejected_before_call(self):
+        with self.assertRaises(ValueError):
+            core.translate(**self.args(prompt_order="invalid"))
+        self.assertEqual(Handler.seen, [])
+
     def test_effort_choices_and_payloads(self):
         self.assertEqual(core.EFFORTS, ["不开启", "low", "medium", "high", "xhigh", "max"])
         for effort in core.EFFORTS:

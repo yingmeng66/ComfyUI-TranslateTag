@@ -35,6 +35,7 @@ async def test_model(request):
             "source_language": "auto", "target_language": "English",
             "reasoning_effort": "low", "system_prompt": "",
             "token_parameter": "max_tokens", "extra_body_json": "{}",
+            "prompt_order": "自动编排",
         }
         args = {name: body.get(name, default) for name, default in defaults.items()}
         if any(not isinstance(value, str) for value in args.values()):

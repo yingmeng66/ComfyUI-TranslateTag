@@ -1,4 +1,4 @@
-from .core import EFFORTS, translate
+from .core import EFFORTS, PROMPT_ORDERS, translate
 
 LANGUAGES = ["auto", "English", "简体中文", "繁體中文", "日本語", "한국어", "Deutsch", "Français", "Español", "Русский"]
 
@@ -22,6 +22,8 @@ class TranslateTag:
             "timeout": ("INT", {"default": 120, "min": 10, "max": 1800}),
             "extra_body_json": ("STRING", {"default": "{}", "multiline": True, "tooltip": "服务商额外参数，如 temperature、chat_template_kwargs；原样发送"}),
             "refresh_seed": ("INT", {"default": 0, "min": 0, "max": 2147483647, "tooltip": "相同输入由 ComfyUI 缓存；更改此值重新请求"}),
+        }, "optional": {
+            "prompt_order": (list(PROMPT_ORDERS), {"default": "自动编排", "tooltip": "仅标签模式生效。自动根据原文重点决定角色、服装或背景的顺序；也可手选优先级。规则追加到自定义系统提示词之后；关闭保留原文顺序。"}),
         }}
 
     RETURN_TYPES = ("STRING",)

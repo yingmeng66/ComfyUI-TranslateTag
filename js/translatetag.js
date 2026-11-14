@@ -52,7 +52,7 @@ app.registerExtension({
             let testing = false;
             this.addWidget("button", "测试当前模型", null, async () => {
                 if (testing) return;
-                const names = ["base_url", "api_key", "model", "mode", "source_language", "target_language", "reasoning_effort", "system_prompt", "max_tokens", "token_parameter", "timeout", "extra_body_json"];
+                const names = ["base_url", "api_key", "model", "mode", "source_language", "target_language", "reasoning_effort", "system_prompt", "max_tokens", "token_parameter", "timeout", "extra_body_json", "prompt_order"];
                 if (this.inputs?.some((input) => names.includes(input.name) && input.link != null)) {
                     testStatus.value = "测试按钮使用节点填写值；请先断开配置项的外部连接，或运行工作流验证连接值。";
                     this.setDirtyCanvas(true, true);
