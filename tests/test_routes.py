@@ -28,7 +28,7 @@ class Request:
 
 class ModelTestRouteTests(unittest.IsolatedAsyncioTestCase):
     async def test_success_uses_current_settings_and_fixed_sample(self):
-        params = {"base_url": "https://example.invalid/v1", "model": "chosen-model", "api_key": "fake", "reasoning_effort": "high", "max_tokens": 8192, "token_parameter": "max_completion_tokens", "system_prompt": "My prompt", "prompt_order": "服装优先"}
+        params = {"base_url": "https://example.invalid/v1", "model": "chosen-model", "api_key": "fake", "reasoning_effort": "high", "max_tokens": 8192, "token_parameter": "max_completion_tokens", "system_prompt": "My prompt", "prompt_order": "Anima 社区编排"}
         with patch.object(routes, "translate", return_value="white cat") as translate:
             response = await routes.test_model(Request(params))
         self.assertEqual(response.status, 200)

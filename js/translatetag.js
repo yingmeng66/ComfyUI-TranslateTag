@@ -16,6 +16,8 @@ app.registerExtension({
                 const effort = widget("reasoning_effort");
                 const legacy = { auto: "low", none: "不开启", minimal: "low" };
                 if (effort && Object.hasOwn(legacy, effort.value)) effort.value = legacy[effort.value];
+                const order = widget("prompt_order");
+                if (order && ["角色优先", "服装优先", "背景优先"].includes(order.value)) order.value = "Anima 社区编排";
             };
             let loading = false;
             const selector = this.addWidget("combo", "选择模型", "请先刷新模型", (value) => {

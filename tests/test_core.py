@@ -115,13 +115,13 @@ class CoreTests(unittest.TestCase):
                 self.assertIn("保持人物属性成组", prompt)
 
     def test_custom_prompt_kept_and_order_appended(self):
-        core.translate(**self.args(system_prompt="Custom instruction", prompt_order="背景优先"))
+        core.translate(**self.args(system_prompt="Custom instruction", prompt_order="Anima 社区编排"))
         prompt = Handler.seen[-1][2]["messages"][0]["content"]
         self.assertTrue(prompt.startswith("Custom instruction"))
-        self.assertIn(core.PROMPT_ORDERS["背景优先"], prompt)
+        self.assertIn(core.PROMPT_ORDERS["Anima 社区编排"], prompt)
 
     def test_prose_not_reordered(self):
-        core.translate(**self.args(mode="translate", prompt_order="背景优先"))
+        core.translate(**self.args(mode="translate", prompt_order="Anima 社区编排"))
         self.assertNotIn("标签编排要求", Handler.seen[-1][2]["messages"][0]["content"])
 
     def test_bad_order_rejected_before_call(self):
